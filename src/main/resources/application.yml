@@ -1,0 +1,17 @@
+
+server:
+  error:
+    include-stacktrace: never
+  servlet:
+    context-path: /tourney
+  port: 8080
+
+spring:
+  data:
+    mongodb:
+      auto-index-creation: true
+
+security:
+  #  One day in MS
+  expiry-ms: 86400000
+  secret: ${JWT_SECRET}
