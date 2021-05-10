@@ -1,6 +1,7 @@
 package com.tournament.tournament.Services;
 
 import com.tournament.tournament.Exceptions.BadRequestException;
+import com.tournament.tournament.Exceptions.EntityMissingException;
 import com.tournament.tournament.Models.User;
 import com.tournament.tournament.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,6 @@ public class UserService {
   }
   // Required by spring for auth
   public User findByUsername(String username) {
-    return userRepository.findByUsername(username);
+    return userRepository.findByUsername(username).orElseThrow(EntityMissingException::new);
   }
 }

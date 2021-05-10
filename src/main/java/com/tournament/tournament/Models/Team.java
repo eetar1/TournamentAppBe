@@ -2,9 +2,11 @@ package com.tournament.tournament.Models;
 
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
@@ -13,7 +15,10 @@ public class Team {
 
   @Id private String id;
 
-  @NotNull private List<String> members;
+  @Indexed(unique = true)
+  private String name;
+
+  @NotNull @NotEmpty private List<String> members;
 
   // TODO replace with user class
   @NotNull @NotBlank private String contact;
