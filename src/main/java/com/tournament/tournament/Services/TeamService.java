@@ -5,6 +5,8 @@ import com.tournament.tournament.Exceptions.EntityMissingException;
 import com.tournament.tournament.Models.Team;
 import com.tournament.tournament.Repositories.TeamRepository;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,5 +32,9 @@ public class TeamService {
     } catch (EntityMissingException ex) {
       throw new BadRequestException("The contact must have an account");
     }
+  }
+
+  public Page<Team> getAll(Pageable page) {
+    return teamRepository.findAll(page);
   }
 }

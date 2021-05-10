@@ -4,6 +4,8 @@ import com.tournament.tournament.Exceptions.BadRequestException;
 import com.tournament.tournament.Models.Team;
 import com.tournament.tournament.Services.TeamService;
 import javax.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,5 +26,10 @@ public class TeamController {
   @PostMapping
   public Team createTeam(@Valid @RequestBody Team newTeam) throws BadRequestException {
     return teamService.createTeam(newTeam);
+  }
+
+  @GetMapping("/all")
+  public Page<Team> getAllTeams(Pageable pageable) {
+    return teamService.getAll(pageable);
   }
 }

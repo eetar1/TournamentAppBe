@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
@@ -14,7 +15,7 @@ public class Match {
 
   @Id private String id;
 
-  @NotNull private Instant matchDate;
+  @NotNull @Indexed private Instant matchDate;
 
   @NotNull @NotBlank private String homeTeam;
 
@@ -30,19 +31,21 @@ public class Match {
 
   private Float score = 0.0F;
 
-  enum Match_Status {
+  public enum Match_Status {
     Created,
     Scheduled,
     Complete,
+    Planned,
     Cancelled
   }
 
-  enum Match_Result {
+  public enum Match_Result {
     Home_Victory,
     Away_Victory,
     Draw,
     Incomplete,
     Cancelled,
-    Pending
+    Pending,
+    Bye
   }
 }
