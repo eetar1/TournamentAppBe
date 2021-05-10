@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/tournament")
+@RequestMapping("/tournaments")
 public class TournamentController {
 
   private final TournamentService tournamentService;

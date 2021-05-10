@@ -29,6 +29,8 @@ public class Match {
 
   @NotNull private Match_Result result = Match_Result.Pending;
 
+  @NotNull @NotBlank private String official;
+
   private Float score = 0.0F;
 
   public enum Match_Status {
