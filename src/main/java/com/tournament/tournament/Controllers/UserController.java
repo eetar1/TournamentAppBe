@@ -22,8 +22,8 @@ public class UserController {
   }
 
   @PostMapping("/sign-up")
-  public void signUp(@Valid @RequestBody User user) throws BadRequestException {
-    this.userService.createUser(user);
+  public User signUp(@Valid @RequestBody User user) throws BadRequestException {
+    return this.userService.createUser(user);
   }
 
   // DO NOT REMOVE
