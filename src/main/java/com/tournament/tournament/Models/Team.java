@@ -1,6 +1,8 @@
 package com.tournament.tournament.Models;
 
+import java.time.Instant;
 import java.util.List;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -22,4 +24,11 @@ public class Team {
 
   // TODO replace with user class
   @NotNull @NotBlank private String contact;
+
+  @NotNull
+  @Min(0)
+  @Indexed
+  private Float elo = 1000.0F;
+
+  private Instant nextMatchDate;
 }

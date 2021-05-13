@@ -28,7 +28,7 @@ public class Tournament {
 
   @NotNull @NotBlank @Indexed private String gameName;
 
-  @NotNull private Instant nextMatchDate;
+  private Instant nextMatchDate;
 
   // TODO replace with user class
   @NotNull @NotBlank private String organizer;

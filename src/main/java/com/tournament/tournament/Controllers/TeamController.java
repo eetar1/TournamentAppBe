@@ -32,4 +32,9 @@ public class TeamController {
   public Page<Team> getAllTeams(Pageable pageable) {
     return teamService.getAll(pageable);
   }
+
+  @GetMapping("/top")
+  public Page<Team> getTopTeams(Pageable pageable) {
+    return teamService.getTop(pageable);
+  }
 }

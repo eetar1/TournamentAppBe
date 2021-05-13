@@ -56,4 +56,9 @@ public class MatchService {
       throw new BadRequestException("A tournament with this name already exists");
     }
   }
+
+  public Page<Match> getRecentDone(Pageable pageable) {
+    return matchRepository.findAllByStatusOrderByMatchDateDesc(
+        pageable, Match.Match_Status.Complete);
+  }
 }

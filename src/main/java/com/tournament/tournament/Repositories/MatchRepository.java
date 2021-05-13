@@ -10,4 +10,6 @@ public interface MatchRepository extends MongoRepository<Match, String> {
   Page<Match> findByGameName(String gameName, Pageable pageable);
 
   Page<Match> findByHomeTeamOrAwayTeam(String teamName, String team2Name, Pageable pageable);
+
+  Page<Match> findAllByStatusOrderByMatchDateDesc(Pageable pageable, Match.Match_Status complete);
 }

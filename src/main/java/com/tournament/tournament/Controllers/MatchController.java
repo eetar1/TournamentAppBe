@@ -28,6 +28,11 @@ public class MatchController {
     return matchService.getByTeam(teamName, pageable);
   }
 
+  @GetMapping("/recent/complete")
+  public Page<Match> getRecentDoneMatches(Pageable pageable) {
+    return matchService.getRecentDone(pageable);
+  }
+
   @PostMapping
   public Match createMatch(@Valid @RequestBody Match match) throws BadRequestException {
     return matchService.create(match);

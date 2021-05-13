@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TeamService {
+  private static final Float DEFAULT_ELO = 1000F;
   private final TeamRepository teamRepository;
   private final UserService userService;
 
@@ -26,6 +27,10 @@ public class TeamService {
   public Team createTeam(Team team) throws BadRequestException {
     try {
       userService.findByUsername(team.getContact());
+
+      //            Set default elo
+      team.setElo(DEFAULT_ELO);
+
       return teamRepository.save(team);
     } catch (DuplicateKeyException ex) {
       throw new BadRequestException("A team with this name already exists");
@@ -36,5 +41,9 @@ public class TeamService {
 
   public Page<Team> getAll(Pageable page) {
     return teamRepository.findAll(page);
+  }
+
+  public Page<Team> getTop(Pageable pageable) {
+    return teamRepository.findAllByOrderByEloDesc(pageable);
   }
 }
