@@ -17,7 +17,7 @@ public class Team {
 
   @Id private String id;
 
-  @Indexed(unique = true)
+  @Indexed(unique = true, sparse = true)
   private String name;
 
   @NotNull @NotEmpty private List<String> members;

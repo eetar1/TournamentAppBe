@@ -17,7 +17,7 @@ public class Tournament {
 
   @Id private String id;
 
-  @NotNull private List<Match> matches = new ArrayList<>();
+  @NotNull private List<List<Match>> matches = new ArrayList<>();
 
   @NotNull
   @Size(min = 3)
@@ -30,10 +30,10 @@ public class Tournament {
 
   private Instant nextMatchDate;
 
+  private Integer round = 0;
+
+  private Team victor;
+
   // TODO replace with user class
   @NotNull @NotBlank private String organizer;
-
-  public void addMatch(Match bye) {
-    this.matches.add(bye);
-  }
 }

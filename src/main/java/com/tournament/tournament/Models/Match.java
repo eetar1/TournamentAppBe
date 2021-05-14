@@ -13,9 +13,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "matches")
 public class Match {
 
+  public Match() {}
+
+  public Match(String tournamentId, String gameName) {
+    this.tournamentId = tournamentId;
+    this.gameName = gameName;
+    this.status = Match_Status.Planned;
+  }
+
   @Id private String id;
 
-  @NotNull @Indexed private Instant matchDate;
+  @Indexed private Instant matchDate;
 
   @NotNull @NotBlank private String homeTeam;
 
@@ -23,7 +31,7 @@ public class Match {
 
   @NotNull
   @Length(min = 2)
-  private String GameName;
+  private String gameName;
 
   @NotNull private Match_Status status;
 
@@ -31,14 +39,16 @@ public class Match {
 
   @NotNull @NotBlank private String official;
 
-  private Float score = 0.0F;
+  private String score;
+
+  private String tournamentId;
 
   public enum Match_Status {
-    Created,
-    Scheduled,
+    Created, // Object exists does not have schedule date
+    Scheduled, // Waiting for play
     Complete,
-    Planned,
-    Cancelled
+    Cancelled,
+    Planned // Used for tournaments matches without team info
   }
 
   public enum Match_Result {
