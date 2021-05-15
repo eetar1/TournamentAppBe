@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/matchs")
+@RequestMapping("/matches")
 public class MatchController {
 
   private final MatchService matchService;
@@ -52,6 +52,22 @@ public class MatchController {
       throws AccessDeniedException {
     String userName = securityService.getUserFromJwt(authorization);
     return matchService.scheduleMatch(userName, schedule, matchId);
+  }
+
+  @GetMapping("/schedule/me")
+  public Page<Match> getToBeScheduled(
+      Pageable pageable,
+      @Parameter(hidden = true) @RequestHeader("authorization") String authorization) {
+    String userName = securityService.getUserFromJwt(authorization);
+    return matchService.getMyToBeScheduled(userName, pageable);
+  }
+
+  @GetMapping("/score/me")
+  public Page<Match> getToBeScored(
+      Pageable pageable,
+      @Parameter(hidden = true) @RequestHeader("authorization") String authorization) {
+    String userName = securityService.getUserFromJwt(authorization);
+    return matchService.getMyToBeScored(userName, pageable);
   }
 
   @GetMapping("/recent")

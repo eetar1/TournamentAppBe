@@ -7,6 +7,8 @@ import com.tournament.tournament.Models.DTOs.CompleteMatchDTO;
 import com.tournament.tournament.Models.DTOs.ScheduleDTO;
 import com.tournament.tournament.Models.Match;
 import com.tournament.tournament.Repositories.MatchRepository;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
@@ -121,5 +123,16 @@ public class MatchService {
     }
 
     return matchRepository.save(storedMatch);
+  }
+
+  public Page<Match> getMyToBeScheduled(String userName, Pageable pageable) {
+    return matchRepository.findAllByOfficialAndStatus(
+        userName, Match.Match_Status.Created, pageable);
+  }
+
+  public Page<Match> getMyToBeScored(String userName, Pageable pageable) {
+    //    Get matches that are scheduled 1 day ago
+    return matchRepository.findAllByOfficialAndStatusAndMatchDateBefore(
+        userName, Match.Match_Status.Created, Instant.now().minus(24, ChronoUnit.HOURS), pageable);
   }
 }
