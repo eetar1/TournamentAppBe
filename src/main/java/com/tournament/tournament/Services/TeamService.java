@@ -46,4 +46,8 @@ public class TeamService {
   public Page<Team> getTop(Pageable pageable) {
     return teamRepository.findAllByOrderByEloDesc(pageable);
   }
+
+  public Page<Team> getByContact(String userName, Pageable pageable) {
+    return teamRepository.findAllByContact(userName, pageable);
+  }
 }

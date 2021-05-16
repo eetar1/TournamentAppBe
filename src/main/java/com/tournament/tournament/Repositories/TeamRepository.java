@@ -10,4 +10,6 @@ public interface TeamRepository extends MongoRepository<Team, String> {
   Optional<Team> findByName(String name);
 
   Page<Team> findAllByOrderByEloDesc(Pageable pageable);
+
+  Page<Team> findAllByContact(String userName, Pageable pageable);
 }

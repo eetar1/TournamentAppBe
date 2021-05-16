@@ -7,6 +7,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
@@ -25,9 +26,9 @@ public class Match {
 
   @Indexed private Instant matchDate;
 
-  @NotNull @NotBlank private String homeTeam;
+  @NotNull @DBRef private Team homeTeam;
 
-  @NotBlank @NotNull private String awayTeam;
+  @NotNull @DBRef private Team awayTeam;
 
   @NotNull
   @Length(min = 2)

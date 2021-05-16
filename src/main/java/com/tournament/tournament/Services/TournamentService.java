@@ -105,7 +105,7 @@ public class TournamentService {
       if (isBye) {
         match.setStatus(Match.Match_Status.Complete);
         match.setResult(Match.Match_Result.Bye);
-        match.setHomeTeam(shuffledTeams.get(0));
+        match.setHomeTeam(teamService.getByName(shuffledTeams.get(0)));
 
         //        Move team up due to the bye
         bracket.get(1).get(0).setHomeTeam(match.getHomeTeam());
@@ -114,8 +114,8 @@ public class TournamentService {
         continue;
       }
 
-      match.setHomeTeam(shuffledTeams.get(teamIdx));
-      match.setAwayTeam(shuffledTeams.get(teamIdx + 1));
+      match.setHomeTeam(teamService.getByName(shuffledTeams.get(teamIdx)));
+      match.setAwayTeam(teamService.getByName(shuffledTeams.get(teamIdx + 1)));
       match.setStatus(Match.Match_Status.Created);
       match.setResult(Match.Match_Result.Pending);
       match = matchService.save(match);
@@ -136,8 +136,8 @@ public class TournamentService {
 
     String winnerName =
         storedMatch.getResult().equals(Match.Match_Result.Home_Victory)
-            ? storedMatch.getHomeTeam()
-            : storedMatch.getAwayTeam();
+            ? storedMatch.getHomeTeam().getName()
+            : storedMatch.getAwayTeam().getName();
 
     int nextRoundNumber = storedTournament.getRound() + 1;
     int currentRoundNumber = nextRoundNumber - 1;
@@ -155,12 +155,12 @@ public class TournamentService {
     for (Match match : currentRound) {
 
       if (match.getHomeTeam() == null) {
-        match.setHomeTeam(winnerName);
+        match.setHomeTeam(teamService.getByName(winnerName));
         matchService.save(match);
         break;
       } else if (match.getAwayTeam() == null) {
         match.setStatus(Match.Match_Status.Created);
-        match.setAwayTeam(winnerName);
+        match.setAwayTeam(teamService.getByName(winnerName));
         matchService.save(match);
         break;
       }
@@ -212,11 +212,15 @@ public class TournamentService {
       bye.setStatus(Match.Match_Status.Complete);
 
       var nextRound = storedTournament.getMatches().get(nextRoundNumber + 1);
-      nextRound.get(0).setHomeTeam(winnerName);
+      nextRound.get(0).setHomeTeam(teamService.getByName(winnerName));
 
       return true;
     }
 
     return false;
+  }
+
+  public Page<Tournament> getMyTournaments(String userName, Pageable pageable) {
+    return tournamentRepository.findAllByOrganizer(userName, pageable);
   }
 }

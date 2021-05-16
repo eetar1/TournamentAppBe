@@ -2,7 +2,9 @@ package com.tournament.tournament.Controllers;
 
 import com.tournament.tournament.Exceptions.BadRequestException;
 import com.tournament.tournament.Models.Team;
+import com.tournament.tournament.Services.SecurityService;
 import com.tournament.tournament.Services.TeamService;
+import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class TeamController {
 
   private final TeamService teamService;
+  private final SecurityService securityService;
 
-  public TeamController(TeamService teamService) {
+  public TeamController(TeamService teamService, SecurityService securityService) {
     this.teamService = teamService;
+    this.securityService = securityService;
   }
 
   @GetMapping("/{teamName}")
@@ -26,6 +30,14 @@ public class TeamController {
   @PostMapping
   public Team createTeam(@Valid @RequestBody Team newTeam) throws BadRequestException {
     return teamService.createTeam(newTeam);
+  }
+
+  @GetMapping("/me")
+  public Page<Team> getByContact(
+      Pageable pageable,
+      @Parameter(hidden = true) @RequestHeader("authorization") String authorization) {
+    String userName = securityService.getUserFromJwt(authorization);
+    return teamService.getByContact(userName, pageable);
   }
 
   @GetMapping("/all")

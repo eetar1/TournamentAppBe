@@ -3,13 +3,18 @@ package com.tournament.tournament.Controllers;
 import com.tournament.tournament.Exceptions.AccessDeniedException;
 import com.tournament.tournament.Exceptions.BadRequestException;
 import com.tournament.tournament.Models.DTOs.CompleteMatchDTO;
+import com.tournament.tournament.Models.DTOs.MatchDTO;
 import com.tournament.tournament.Models.DTOs.ScheduleDTO;
 import com.tournament.tournament.Models.Match;
+import com.tournament.tournament.Models.Team;
 import com.tournament.tournament.Services.MatchService;
 import com.tournament.tournament.Services.SecurityService;
-import com.tournament.tournament.Services.TournamentService;
+import com.tournament.tournament.Services.TeamService;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
+import org.modelmapper.AbstractConverter;
+import org.modelmapper.Converter;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +24,25 @@ import org.springframework.web.bind.annotation.*;
 public class MatchController {
 
   private final MatchService matchService;
+  private final TeamService teamService;
+  private final ModelMapper modelMapper;
   private final SecurityService securityService;
 
   public MatchController(
-      MatchService matchService,
-      SecurityService securityService,
-      TournamentService tournamentService) {
+      MatchService matchService, SecurityService securityService, TeamService teamService) {
     this.matchService = matchService;
     this.securityService = securityService;
+    this.teamService = teamService;
+    modelMapper = new ModelMapper();
+
+    Converter<String, Team> toTeam =
+        new AbstractConverter<String, Team>() {
+          protected Team convert(String source) {
+            return teamService.getByName(source);
+          }
+        };
+
+    modelMapper.addConverter(toTeam);
   }
 
   @GetMapping("/{gameName}")
@@ -85,7 +101,8 @@ public class MatchController {
   }
 
   @PostMapping
-  public Match createMatch(@Valid @RequestBody Match match) throws BadRequestException {
+  public Match createMatch(@Valid @RequestBody MatchDTO matchDTO) throws BadRequestException {
+    Match match = modelMapper.map(matchDTO, Match.class);
     return matchService.create(match);
   }
 }

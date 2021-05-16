@@ -23,7 +23,7 @@ public class Team {
   @NotNull @NotEmpty private List<String> members;
 
   // TODO replace with user class
-  @NotNull @NotBlank private String contact;
+  @NotNull @NotBlank @Indexed private String contact;
 
   @NotNull
   @Min(0)

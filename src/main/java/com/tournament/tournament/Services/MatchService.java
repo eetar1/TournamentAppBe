@@ -8,7 +8,6 @@ import com.tournament.tournament.Models.DTOs.ScheduleDTO;
 import com.tournament.tournament.Models.Match;
 import com.tournament.tournament.Repositories.MatchRepository;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
@@ -57,18 +56,16 @@ public class MatchService {
 
       //            Check both teams exist
       try {
-        teamService.getByName(match.getHomeTeam());
-        teamService.getByName(match.getAwayTeam());
+        teamService.getByName(match.getHomeTeam().getName());
+        teamService.getByName(match.getAwayTeam().getName());
       } catch (EntityMissingException ex) {
         throw new BadRequestException("Teams must exist before they are added to a match");
       }
 
       match.setScore(null);
 
-      if (match.getStatus() != Match.Match_Status.Created
-          && match.getStatus() != Match.Match_Status.Scheduled) {
-        throw new BadRequestException("Matches must be created with status as schedule or created");
-      }
+      match.setStatus(
+          match.getMatchDate() != null ? Match.Match_Status.Scheduled : Match.Match_Status.Created);
 
       if (match.getMatchDate() == null && match.getStatus().equals(Match.Match_Status.Scheduled)) {
         throw new BadRequestException("Scheduled matches must have a date");
@@ -133,6 +130,6 @@ public class MatchService {
   public Page<Match> getMyToBeScored(String userName, Pageable pageable) {
     //    Get matches that are scheduled 1 day ago
     return matchRepository.findAllByOfficialAndStatusAndMatchDateBefore(
-        userName, Match.Match_Status.Created, Instant.now().minus(24, ChronoUnit.HOURS), pageable);
+        userName, Match.Match_Status.Scheduled, Instant.now(), pageable);
   }
 }
