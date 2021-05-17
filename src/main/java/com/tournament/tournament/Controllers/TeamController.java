@@ -1,11 +1,13 @@
 package com.tournament.tournament.Controllers;
 
 import com.tournament.tournament.Exceptions.BadRequestException;
+import com.tournament.tournament.Models.DTOs.TeamDTO;
 import com.tournament.tournament.Models.Team;
 import com.tournament.tournament.Services.SecurityService;
 import com.tournament.tournament.Services.TeamService;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +18,12 @@ public class TeamController {
 
   private final TeamService teamService;
   private final SecurityService securityService;
+  private final ModelMapper modelMapper;
 
   public TeamController(TeamService teamService, SecurityService securityService) {
     this.teamService = teamService;
     this.securityService = securityService;
+    modelMapper = new ModelMapper();
   }
 
   @GetMapping("/{teamName}")
@@ -28,7 +32,13 @@ public class TeamController {
   }
 
   @PostMapping
-  public Team createTeam(@Valid @RequestBody Team newTeam) throws BadRequestException {
+  public Team createTeam(
+      @Valid @RequestBody TeamDTO teamDTO,
+      @Parameter(hidden = true) @RequestHeader("authorization") String authorization)
+      throws BadRequestException {
+    Team newTeam = modelMapper.map(teamDTO, Team.class);
+    String userName = securityService.getUserFromJwt(authorization);
+    newTeam.setContact(userName);
     return teamService.createTeam(newTeam);
   }
 

@@ -18,9 +18,11 @@ public class Team {
   @Id private String id;
 
   @Indexed(unique = true, sparse = true)
+  @NotNull
+  @NotBlank
   private String name;
 
-  @NotNull @NotEmpty private List<String> members;
+  @NotNull @NotEmpty private List<TeamMember> teamMembers;
 
   // TODO replace with user class
   @NotNull @NotBlank @Indexed private String contact;
