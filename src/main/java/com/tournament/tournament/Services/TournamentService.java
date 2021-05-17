@@ -3,11 +3,13 @@ package com.tournament.tournament.Services;
 import com.tournament.tournament.Exceptions.BadRequestException;
 import com.tournament.tournament.Exceptions.EntityMissingException;
 import com.tournament.tournament.Models.Match;
+import com.tournament.tournament.Models.Team;
 import com.tournament.tournament.Models.Tournament;
 import com.tournament.tournament.Repositories.TournamentRepository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +49,8 @@ public class TournamentService {
       userService.findByUsername(tournament.getOrganizer());
 
       try {
-        for (String team : tournament.getTeams()) {
+        for (String team :
+            tournament.getTeams().stream().map(Team::getName).collect(Collectors.toList())) {
           brokenTeamName = team;
           teamService.getByName(team);
         }
@@ -71,7 +74,7 @@ public class TournamentService {
 
   private Tournament setUpMatches(Tournament tournament) {
     //        Clone to preserve ordering
-    List<String> shuffledTeams = new ArrayList<>(tournament.getTeams());
+    List<Team> shuffledTeams = new ArrayList<>(tournament.getTeams());
 
     //        Randomly chose the first bye
     Collections.shuffle(shuffledTeams);
@@ -82,14 +85,14 @@ public class TournamentService {
     //        Adds the correct number of matches and byes by level
     for (double i = Math.ceil(tournament.getTeams().size() / 2.0); i > 1; i = Math.ceil(i / 2.0)) {
       for (double x = 0; x < i; x++) {
-        Match tmp = new Match(tournament.getId(), tournament.getGameName());
+        Match tmp = new Match(tournament, tournament.getGameName());
         matchService.save(tmp);
         games.add(tmp);
       }
       bracket.add(games);
       games = new ArrayList<>();
     }
-    Match last = new Match(tournament.getId(), tournament.getGameName());
+    Match last = new Match(tournament, tournament.getGameName());
     matchService.save(last);
     games.add(last);
     //        All matches will have status planned
@@ -105,7 +108,7 @@ public class TournamentService {
       if (isBye) {
         match.setStatus(Match.Match_Status.Complete);
         match.setResult(Match.Match_Result.Bye);
-        match.setHomeTeam(teamService.getByName(shuffledTeams.get(0)));
+        match.setHomeTeam(shuffledTeams.get(0));
 
         //        Move team up due to the bye
         bracket.get(1).get(0).setHomeTeam(match.getHomeTeam());
@@ -114,8 +117,8 @@ public class TournamentService {
         continue;
       }
 
-      match.setHomeTeam(teamService.getByName(shuffledTeams.get(teamIdx)));
-      match.setAwayTeam(teamService.getByName(shuffledTeams.get(teamIdx + 1)));
+      match.setHomeTeam(shuffledTeams.get(teamIdx));
+      match.setAwayTeam(shuffledTeams.get(teamIdx + 1));
       match.setStatus(Match.Match_Status.Created);
       match.setResult(Match.Match_Result.Pending);
       match = matchService.save(match);
@@ -131,7 +134,7 @@ public class TournamentService {
   public Match completeMatch(Match storedMatch) {
     Tournament storedTournament =
         tournamentRepository
-            .findById(storedMatch.getTournamentId())
+            .findById(storedMatch.getTournament().getId())
             .orElseThrow(EntityMissingException::new);
 
     String winnerName =

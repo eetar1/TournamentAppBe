@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
@@ -21,7 +22,8 @@ public class Tournament {
 
   @NotNull
   @Size(min = 3)
-  private List<String> teams = new ArrayList<>();
+  @DBRef
+  private List<Team> teams = new ArrayList<>();
 
   @Indexed(unique = true)
   private String name;

@@ -115,7 +115,7 @@ public class MatchService {
     storedMatch.setResult(completeMatch.getResult());
     storedMatch.setStatus(Match.Match_Status.Complete);
 
-    if (storedMatch.getTournamentId() != null) {
+    if (storedMatch.getTournament() != null) {
       tournamentService.completeMatch(storedMatch);
     }
 

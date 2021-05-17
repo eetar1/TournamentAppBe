@@ -1,5 +1,6 @@
 package com.tournament.tournament.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.Instant;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -16,9 +17,10 @@ public class Match {
 
   public Match() {}
 
-  public Match(String tournamentId, String gameName) {
-    this.tournamentId = tournamentId;
+  public Match(Tournament tournament, String gameName) {
+    this.tournament = tournament;
     this.gameName = gameName;
+    this.tournamentName = tournament.getName();
     this.status = Match_Status.Planned;
   }
 
@@ -42,7 +44,9 @@ public class Match {
 
   private String score;
 
-  private String tournamentId;
+  @DBRef @JsonIgnore private Tournament tournament;
+
+  private String tournamentName;
 
   public enum Match_Status {
     Created, // Object exists does not have schedule date

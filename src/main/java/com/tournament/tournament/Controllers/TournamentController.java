@@ -1,11 +1,13 @@
 package com.tournament.tournament.Controllers;
 
 import com.tournament.tournament.Exceptions.BadRequestException;
+import com.tournament.tournament.Models.DTOs.TournamentDTO;
 import com.tournament.tournament.Models.Tournament;
 import com.tournament.tournament.Services.SecurityService;
 import com.tournament.tournament.Services.TournamentService;
 import io.swagger.v3.oas.annotations.Parameter;
 import javax.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +18,15 @@ public class TournamentController {
 
   private final TournamentService tournamentService;
   private final SecurityService securityService;
+  private final ModelMapper modelMapper;
 
   public TournamentController(
-      TournamentService tournamentService, SecurityService securityService) {
+      TournamentService tournamentService,
+      SecurityService securityService,
+      ModelMapper modelMapper) {
     this.tournamentService = tournamentService;
     this.securityService = securityService;
+    this.modelMapper = modelMapper;
   }
 
   @GetMapping("/{tournamentName}")
@@ -42,8 +48,13 @@ public class TournamentController {
   }
 
   @PostMapping
-  public Tournament createTournament(@Valid @RequestBody Tournament tournament)
+  public Tournament createTournament(
+      @Valid @RequestBody TournamentDTO tournamentDTO,
+      @Parameter(hidden = true) @RequestHeader("authorization") String authorization)
       throws BadRequestException {
+    Tournament tournament = modelMapper.map(tournamentDTO, Tournament.class);
+    String userName = securityService.getUserFromJwt(authorization);
+    tournament.setOrganizer(userName);
     return tournamentService.create(tournament);
   }
 }

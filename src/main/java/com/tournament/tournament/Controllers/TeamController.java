@@ -20,10 +20,11 @@ public class TeamController {
   private final SecurityService securityService;
   private final ModelMapper modelMapper;
 
-  public TeamController(TeamService teamService, SecurityService securityService) {
+  public TeamController(
+      TeamService teamService, SecurityService securityService, ModelMapper modelMapper) {
     this.teamService = teamService;
     this.securityService = securityService;
-    modelMapper = new ModelMapper();
+    this.modelMapper = modelMapper;
   }
 
   @GetMapping("/{teamName}")
