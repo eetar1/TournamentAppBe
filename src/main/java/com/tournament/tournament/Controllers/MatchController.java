@@ -31,12 +31,17 @@ public class MatchController {
     this.modelMapper = modelMapper;
   }
 
-  @GetMapping("/{gameName}")
+  @GetMapping("/{matchId}")
+  public Match getById(@PathVariable String matchId) {
+    return matchService.getById(matchId);
+  }
+
+  @GetMapping("/game/{gameName}")
   public Page<Match> getByGame(@PathVariable("gameName") String gameName, Pageable pageable) {
     return matchService.getByGame(gameName, pageable);
   }
 
-  @GetMapping("/{teamName}")
+  @GetMapping("/team/{teamName}")
   public Page<Match> getByTeam(@PathVariable("teamName") String teamName, Pageable pageable) {
     return matchService.getByTeam(teamName, pageable);
   }
@@ -54,6 +59,14 @@ public class MatchController {
       throws AccessDeniedException {
     String userName = securityService.getUserFromJwt(authorization);
     return matchService.scheduleMatch(userName, schedule, matchId);
+  }
+
+  @GetMapping("/me")
+  public Page<Match> getMyMatches(
+      Pageable pageable,
+      @Parameter(hidden = true) @RequestHeader("authorization") String authorization) {
+    String userName = securityService.getUserFromJwt(authorization);
+    return matchService.getMyMatches(userName, pageable);
   }
 
   @GetMapping("/schedule/me")

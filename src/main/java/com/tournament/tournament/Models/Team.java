@@ -7,11 +7,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
+@EqualsAndHashCode
 @Document(collection = "teams")
 public class Team {
 
@@ -33,4 +35,6 @@ public class Team {
   private Float elo = 1000.0F;
 
   private Instant nextMatchDate;
+
+  private Integer recentEloChange;
 }

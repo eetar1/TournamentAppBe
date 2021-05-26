@@ -62,6 +62,10 @@ public class MatchService {
         throw new BadRequestException("Teams must exist before they are added to a match");
       }
 
+      if (match.getHomeTeam().equals(match.getAwayTeam())) {
+        throw new BadRequestException("A team cannot play itself");
+      }
+
       match.setScore(null);
 
       match.setStatus(
@@ -131,5 +135,14 @@ public class MatchService {
     //    Get matches that are scheduled 1 day ago
     return matchRepository.findAllByOfficialAndStatusAndMatchDateBefore(
         userName, Match.Match_Status.Scheduled, Instant.now(), pageable);
+  }
+
+  public Match getById(String matchId) {
+    return matchRepository.findById(matchId).orElseThrow(EntityMissingException::new);
+  }
+
+  public Page<Match> getMyMatches(String userName, Pageable pageable) {
+    return matchRepository.findByOfficialAndStatusNot(
+        userName, Match.Match_Status.Complete, pageable);
   }
 }
