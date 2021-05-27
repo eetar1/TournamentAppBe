@@ -2,8 +2,10 @@ package com.tournament.tournament.Services;
 
 import com.tournament.tournament.Exceptions.BadRequestException;
 import com.tournament.tournament.Exceptions.EntityMissingException;
+import com.tournament.tournament.Models.Match;
 import com.tournament.tournament.Models.Team;
 import com.tournament.tournament.Repositories.TeamRepository;
+import java.time.Instant;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,5 +51,19 @@ public class TeamService {
 
   public Page<Team> getByContact(String userName, Pageable pageable) {
     return teamRepository.findAllByContact(userName, pageable);
+  }
+
+  public void updateNextMatch(Instant date, Match storedMatch) {
+    Team home = storedMatch.getHomeTeam();
+    Team away = storedMatch.getAwayTeam();
+    if (home.getNextMatchDate() == null || home.getNextMatchDate().isAfter(date)) {
+      home.setNextMatchDate(date);
+      teamRepository.save(home);
+    }
+
+    if (away.getNextMatchDate() == null || away.getNextMatchDate().isAfter(date)) {
+      away.setNextMatchDate(date);
+      teamRepository.save(away);
+    }
   }
 }

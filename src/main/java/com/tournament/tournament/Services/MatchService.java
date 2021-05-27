@@ -75,6 +75,10 @@ public class MatchService {
         throw new BadRequestException("Scheduled matches must have a date");
       }
 
+      if (match.getMatchDate() != null) {
+        teamService.updateNextMatch(match.getMatchDate(), match);
+      }
+
       return matchRepository.save(match);
     } catch (DuplicateKeyException ex) {
       throw new BadRequestException("A tournament with this name already exists");
@@ -96,6 +100,13 @@ public class MatchService {
 
     storedMatch.setMatchDate(schedule.getDate());
     storedMatch.setStatus(Match.Match_Status.Scheduled);
+
+    teamService.updateNextMatch(schedule.getDate(), storedMatch);
+
+    if (storedMatch.getTournamentName() != null) {
+      tournamentService.updateNextMatch(
+          schedule.getDate(), tournamentService.getByName(storedMatch.getTournamentName()));
+    }
 
     return matchRepository.save(storedMatch);
   }
@@ -119,7 +130,7 @@ public class MatchService {
     storedMatch.setResult(completeMatch.getResult());
     storedMatch.setStatus(Match.Match_Status.Complete);
 
-    if (storedMatch.getTournament() != null) {
+    if (storedMatch.getTournamentName() != null) {
       tournamentService.completeMatch(storedMatch);
     }
 

@@ -6,6 +6,7 @@ import com.tournament.tournament.Models.Match;
 import com.tournament.tournament.Models.Team;
 import com.tournament.tournament.Models.Tournament;
 import com.tournament.tournament.Repositories.TournamentRepository;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -134,7 +135,7 @@ public class TournamentService {
   public Match completeMatch(Match storedMatch) {
     Tournament storedTournament =
         tournamentRepository
-            .findById(storedMatch.getTournament().getId())
+            .findByName(storedMatch.getTournamentName())
             .orElseThrow(EntityMissingException::new);
 
     String winnerName =
@@ -225,5 +226,12 @@ public class TournamentService {
 
   public Page<Tournament> getMyTournaments(String userName, Pageable pageable) {
     return tournamentRepository.findAllByOrganizer(userName, pageable);
+  }
+
+  public void updateNextMatch(Instant date, Tournament tournament) {
+    if (tournament.getNextMatchDate() == null || tournament.getNextMatchDate().isAfter(date)) {
+      tournament.setNextMatchDate(date);
+      tournamentRepository.save(tournament);
+    }
   }
 }

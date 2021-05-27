@@ -1,6 +1,5 @@
 package com.tournament.tournament.Models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.Instant;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -20,7 +19,6 @@ public class Match {
   public Match() {}
 
   public Match(Tournament tournament, String gameName) {
-    this.tournament = tournament;
     this.gameName = gameName;
     this.tournamentName = tournament.getName();
     this.status = Match_Status.Planned;
@@ -45,8 +43,6 @@ public class Match {
   @NotNull @NotBlank private String official;
 
   private String score;
-
-  @DBRef @JsonIgnore private Tournament tournament;
 
   private String tournamentName;
 
