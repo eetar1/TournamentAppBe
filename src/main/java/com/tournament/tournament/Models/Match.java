@@ -18,8 +18,9 @@ public class Match {
 
   public Match() {}
 
-  public Match(Tournament tournament, String gameName) {
+  public Match(Tournament tournament, String gameName, String official) {
     this.gameName = gameName;
+    this.official = official;
     this.tournamentName = tournament.getName();
     this.status = Match_Status.Planned;
   }

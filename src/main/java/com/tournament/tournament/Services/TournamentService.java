@@ -86,14 +86,14 @@ public class TournamentService {
     //        Adds the correct number of matches and byes by level
     for (double i = Math.ceil(tournament.getTeams().size() / 2.0); i > 1; i = Math.ceil(i / 2.0)) {
       for (double x = 0; x < i; x++) {
-        Match tmp = new Match(tournament, tournament.getGameName());
+        Match tmp = new Match(tournament, tournament.getGameName(), tournament.getOrganizer());
         matchService.save(tmp);
         games.add(tmp);
       }
       bracket.add(games);
       games = new ArrayList<>();
     }
-    Match last = new Match(tournament, tournament.getGameName());
+    Match last = new Match(tournament, tournament.getGameName(), tournament.getOrganizer());
     matchService.save(last);
     games.add(last);
     //        All matches will have status planned
@@ -155,7 +155,10 @@ public class TournamentService {
       }
     }
 
-    var currentRound = storedTournament.getMatches().get(nextRoundNumber);
+    var currentRound =
+        nextRoundNumber < storedTournament.getMatches().size()
+            ? storedTournament.getMatches().get(nextRoundNumber)
+            : new ArrayList<Match>();
     for (Match match : currentRound) {
 
       if (match.getHomeTeam() == null) {
@@ -171,7 +174,8 @@ public class TournamentService {
     }
 
     //        If not the finals and level is full up the level
-    if (roundComplete(currentRound, storedTournament, winnerName, nextRoundNumber)) {
+    if (currentRound.size() > 0
+        && roundComplete(currentRound, storedTournament, winnerName, nextRoundNumber)) {
       storedTournament.setRound(nextRoundNumber);
     }
 
@@ -185,9 +189,18 @@ public class TournamentService {
                 .get(0)
                 .getId())) {
       storedTournament.setVictor(teamService.getByName(winnerName));
+      storedTournament.setStatus(Tournament.Tournament_Status.Complete);
     }
 
-    storedTournament.getMatches().set(nextRoundNumber, currentRound);
+    if (!currentRound.isEmpty()) {
+      storedTournament.getMatches().set(nextRoundNumber, currentRound);
+    }
+
+    //    Update next match date
+    Match nextMatch = matchService.nextScheduledMatchInTournament(storedTournament.getName());
+
+    storedTournament.setNextMatchDate(nextMatch != null ? nextMatch.getMatchDate() : null);
+
     tournamentRepository.save(storedTournament);
     return storedMatch;
   }
@@ -215,7 +228,7 @@ public class TournamentService {
       bye.setResult(Match.Match_Result.Bye);
       bye.setStatus(Match.Match_Status.Complete);
 
-      var nextRound = storedTournament.getMatches().get(nextRoundNumber + 1);
+      var nextRound = storedTournament.getMatches().get(nextRoundNumber);
       nextRound.get(0).setHomeTeam(teamService.getByName(winnerName));
 
       return true;
@@ -233,5 +246,10 @@ public class TournamentService {
       tournament.setNextMatchDate(date);
       tournamentRepository.save(tournament);
     }
+  }
+
+  public Page<Tournament> getMyOngoingTournaments(String userName, Pageable pageable) {
+    return tournamentRepository.findAllByOrganizerAndStatus(
+        userName, Tournament.Tournament_Status.In_progress, pageable);
   }
 }

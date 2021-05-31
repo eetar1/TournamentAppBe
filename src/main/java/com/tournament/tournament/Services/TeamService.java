@@ -66,4 +66,8 @@ public class TeamService {
       teamRepository.save(away);
     }
   }
+
+  public Team save(Team team) {
+    return teamRepository.save(team);
+  }
 }

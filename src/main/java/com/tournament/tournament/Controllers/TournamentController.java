@@ -30,8 +30,16 @@ public class TournamentController {
   }
 
   @GetMapping("/{tournamentName}")
-  public Tournament getByName(@PathVariable("tournammentName") String name) {
+  public Tournament getByName(@PathVariable("tournamentName") String name) {
     return tournamentService.getByName(name);
+  }
+
+  @GetMapping("/ongoing/me")
+  public Page<Tournament> getMyOngoingTournament(
+      Pageable pageable,
+      @Parameter(hidden = true) @RequestHeader("authorization") String authorization) {
+    String userName = securityService.getUserFromJwt(authorization);
+    return tournamentService.getMyOngoingTournaments(userName, pageable);
   }
 
   @GetMapping("/me")

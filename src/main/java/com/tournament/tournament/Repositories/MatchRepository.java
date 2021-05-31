@@ -23,6 +23,12 @@ public interface MatchRepository extends MongoRepository<Match, String> {
   Page<Match> findAllByOfficialAndStatusAndMatchDateBefore(
       String official, Match.Match_Status status, Instant date, Pageable pageable);
 
-  Page<Match> findByOfficialAndStatusNot(
-      String userName, Match.Match_Status complete, Pageable pageable);
+  Page<Match> findByStatusOrStatusAndOfficial(
+      Match.Match_Status created, Match.Match_Status scheduled, String userName, Pageable pageable);
+
+  Match findByHomeTeamOrAwayTeamAndStatusOrderByMatchDate(
+      String name, String name1, Match.Match_Status scheduled);
+
+  Match findByTournamentNameAndStatusOrderByMatchDate(
+      String tournamentName, Match.Match_Status scheduled);
 }

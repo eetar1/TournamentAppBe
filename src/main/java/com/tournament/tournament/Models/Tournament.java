@@ -38,6 +38,13 @@ public class Tournament {
 
   private Team victor;
 
+  private Tournament_Status status = Tournament_Status.In_progress;
+
   // TODO replace with user class
   @NotNull @NotBlank private String organizer;
+
+  public enum Tournament_Status {
+    In_progress,
+    Complete
+  }
 }

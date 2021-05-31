@@ -10,4 +10,7 @@ public interface TournamentRepository extends MongoRepository<Tournament, String
   Optional<Tournament> findByName(String name);
 
   Page<Tournament> findAllByOrganizer(String userName, Pageable pageable);
+
+  Page<Tournament> findAllByOrganizerAndStatus(
+      String userName, Tournament.Tournament_Status in_progress, Pageable pageable);
 }
