@@ -39,7 +39,7 @@ public class TournamentService {
     return tournamentRepository.findAll(pageable);
   }
 
-  public Tournament getByName(String name) {
+  public Tournament getByName(String name) throws EntityMissingException {
     return tournamentRepository.findByName(name).orElseThrow(EntityMissingException::new);
   }
 
@@ -251,5 +251,9 @@ public class TournamentService {
   public Page<Tournament> getMyOngoingTournaments(String userName, Pageable pageable) {
     return tournamentRepository.findAllByOrganizerAndStatus(
         userName, Tournament.Tournament_Status.In_progress, pageable);
+  }
+
+  public Tournament getById(String tournamentId) throws EntityMissingException{
+    return tournamentRepository.findById(tournamentId).orElseThrow(EntityMissingException::new);
   }
 }

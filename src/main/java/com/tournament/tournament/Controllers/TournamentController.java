@@ -1,6 +1,7 @@
 package com.tournament.tournament.Controllers;
 
 import com.tournament.tournament.Exceptions.BadRequestException;
+import com.tournament.tournament.Exceptions.EntityMissingException;
 import com.tournament.tournament.Models.DTOs.TournamentDTO;
 import com.tournament.tournament.Models.Tournament;
 import com.tournament.tournament.Services.SecurityService;
@@ -29,8 +30,8 @@ public class TournamentController {
     this.modelMapper = modelMapper;
   }
 
-  @GetMapping("/{tournamentName}")
-  public Tournament getByName(@PathVariable("tournamentName") String name) {
+  @GetMapping("/name/{tournamentName}")
+  public Tournament getByName(@PathVariable("tournamentName") String name) throws EntityMissingException {
     return tournamentService.getByName(name);
   }
 
@@ -48,6 +49,11 @@ public class TournamentController {
       @Parameter(hidden = true) @RequestHeader("authorization") String authorization) {
     String userName = securityService.getUserFromJwt(authorization);
     return tournamentService.getMyTournaments(userName, pageable);
+  }
+
+  @GetMapping("/id/{tournamentId}")
+  public Tournament getTournamentById(@PathVariable("tournamentId") String tournamentId) {
+    return tournamentService.getById(tournamentId);
   }
 
   @GetMapping("/all")
